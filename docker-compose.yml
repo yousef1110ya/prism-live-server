@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: node_app
+    ports:
+      - "4000:4000"      
+    environment:
+      - PORT=4000
+      - MONGO_URL=mongodb://admin:1110ya@mongo:27017
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_IP=192.168.1.15
+      - BASE_URL=http://localhost:4000
+    depends_on:
+      - mongo
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "4001:27017"       # MongoDB
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=1110ya
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  rtmp:
+    image: tiangolo/nginx-rtmp:latest
+    container_name: nginx_rtmp
+    ports:
+      - "1935:1935"       # RTMP ingest
+      - "8080:80"         # HTTP for HLS/status
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
