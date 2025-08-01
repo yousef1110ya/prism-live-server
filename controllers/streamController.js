@@ -43,10 +43,23 @@ const startStream = async (req , res) => {
             // is_active will default to true
           });
           return res.status(201).json({
-            message: 'Stream created successfully',
-            stream: newStream,
-          });
-    } catch (error) {
+    message: 'Stream created successfully',
+    stream: {
+      id: newStream._id,
+      views:  newStream.views,
+      streamKey: newStream.streamKey,
+      streamURL: newStream.streamURL,
+      creator: {
+        id: newStream.streamerId,
+        name: newStream.streamerName,
+        username: newStream.streamerName,
+        avatar: newStream.streamerImage,
+      },
+      createdAt: newStream.createdAt,
+      updatedAt: newStream.updatedAt,
+    },
+  });
+   } catch (error) {
         return res.status(400).json({
             message: 'Failed to create stream',
             error: error.message,
@@ -117,20 +130,31 @@ const getStreams = async (req , res) => {
     const nextPageUrl = page < lastPage ? constructPageUrl(page + 1) : null;
     const prevPageUrl = page > 1 ? constructPageUrl(page - 1) : null;
 
+const formattedStreams = streams.map((newStream) => ({
+       id: newStream._id,
+      views:  newStream.views,
+      streamKey: newStream.streamKey,
+      streamURL: newStream.streamURL,
+      creator: {
+        id: newStream.streamerId,
+        name: newStream.streamerName,
+        username: newStream.streamerName,
+        avatar: newStream.streamerImage,
+      },
+      createdAt: newStream.createdAt,
+      updatedAt: newStream.updatedAt,
+   }));
+
     res.status(200).json({
-      current_page: page,
-      data: streams,
-      first_page_url: firstPageUrl,
-      from: from,
-      last_page: lastPage,
-      last_page_url: lastPageUrl,
-      next_page_url: nextPageUrl,
-      path: `${process.env.BASE_URL}${req.baseUrl}${req.path}`,
-      per_page: limit,
-      prev_page_url: prevPageUrl,
-      to: to,
-      total: total,
+      streams: formattedStreams,
+      pagination: {
+        current_page: page,
+        per_page: limit,
+        total,
+        last_page: lastPage,
+      },
     });
+      
   } catch (error) {
     res.status(500).json({
       message: 'Internal server error',
