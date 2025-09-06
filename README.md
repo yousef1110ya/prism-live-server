@@ -18,8 +18,9 @@ there are a few endpoints for this application and all of them require jwt auth
 
 ## installing 
 1. clone this repo 
-2. Use `docker-compose up -d` to install all the docker images.
-3. run the docker container from docker desktop (for simplicity)
+2. run npm install
+3. Use `docker-compose up -d` to install all the docker images.
+4. run the docker container from docker desktop (for simplicity)
 
 
 
